@@ -1,0 +1,94 @@
+using System;
+using System.Collections.Generic;
+
+public class Tasks
+{
+    // Задание 1
+    public static void Task1()
+    {
+        string text = "Вот дом, Который построил Джек. А это пшеница, Которая в темном чулане хранится В доме, Который построил Джек. А это веселая птица-синица, Которая часто ворует пшеницу, Которая в темном чулане хранится В доме, Который построил Джек.";
+
+        Dictionary<string, int> wordCounts = new Dictionary<string, int>();
+
+        string[] words = text.Split(new char[] { ' ', ',', '.', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (string word in words)
+        {
+            string lowerWord = word.ToLower();
+            if (wordCounts.ContainsKey(lowerWord))
+            {
+                wordCounts[lowerWord]++;
+            }
+            else
+            {
+                wordCounts[lowerWord] = 1;
+            }
+        }
+
+        Console.WriteLine("Слово\t\tКоличество");
+        Console.WriteLine("------------------------");
+        foreach (var pair in wordCounts)
+        {
+            Console.WriteLine($"{pair.Key}\t\t{pair.Value}");
+        }
+    }
+
+    // Задание 2
+    public interface IPropertyChanged
+    {
+        event PropertyEventHandler PropertyChanged;
+    }
+
+    public delegate void PropertyEventHandler(object sender, PropertyEventArgs e);
+
+    public class PropertyEventArgs : EventArgs
+    {
+        public string PropertyName { get; }
+        public PropertyEventArgs(string propertyName)
+        {
+            PropertyName = propertyName;
+        }
+    }
+
+    public class MyClass : IPropertyChanged
+    {
+        private string myProperty;
+        public event PropertyEventHandler PropertyChanged;
+
+        public string MyProperty
+        {
+            get { return myProperty; }
+            set
+            {
+                if (myProperty != value)
+                {
+                    myProperty = value;
+                    OnPropertyChanged(nameof(MyProperty)); // Используем nameof
+                }
+            }
+        }
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyEventArgs(propertyName));
+        }
+    }
+
+    public static void Task2()
+    {
+        MyClass obj = new MyClass();
+        obj.PropertyChanged += (sender, e) =>
+        {
+            Console.WriteLine($"Свойство {e.PropertyName} изменено.");
+        };
+
+        obj.MyProperty = "Первое значение";
+        obj.MyProperty = "Второе значение";
+    }
+
+    public static void Main(string[] args)
+    {
+        Task1();
+        Task2();
+    }
+}
