@@ -1,0 +1,171 @@
+using System;
+using System.Collections.Generic;
+
+public class Tasks
+{
+    // Задание 1
+    public class Money
+    {
+        public int Dollars { get; set; }
+        public int Cents { get; set; }
+
+        public Money(int dollars, int cents)
+        {
+            Dollars = dollars;
+            Cents = cents;
+        }
+
+        public void Display()
+        {
+            Console.WriteLine($"Сумма: {Dollars}.{Cents:D2}");
+        }
+
+        public void SetValues(int dollars, int cents)
+        {
+            Dollars = dollars;
+            Cents = cents;
+        }
+    }
+
+    public class Product
+    {
+        public string Name { get; set; }
+        public Money Price { get; set; }
+
+        public Product(string name, int dollars, int cents)
+        {
+            Name = name;
+            Price = new Money(dollars, cents);
+        }
+
+        public void ReducePrice(int amount)
+        {
+            Price.Dollars -= amount;
+            if (Price.Dollars < 0) Price.Dollars = 0; //Чтобы не было отрицательной цены
+        }
+
+        public void Display()
+        {
+            Console.WriteLine($"Продукт: {Name}");
+            Price.Display();
+        }
+    }
+
+    // Задание 2
+    public class Device
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+
+        public Device(string name, string description)
+        {
+            Name = name;
+            Description = description;
+        }
+
+        public virtual void Sound() { Console.WriteLine("Звук устройства..."); }
+        public void Show() { Console.WriteLine($"Название устройства: {Name}"); }
+        public void Desc() { Console.WriteLine($"Описание: {Description}"); }
+    }
+
+    public class Kettle : Device
+    {
+        public Kettle(string name, string description) : base(name, description) { }
+        public override void Sound() { Console.WriteLine("Буль-буль!"); }
+    }
+
+    public class Microwave : Device
+    {
+        public Microwave(string name, string description) : base(name, description) { }
+        public override void Sound() { Console.WriteLine("Бип-бип!"); }
+    }
+
+    public class Car : Device
+    {
+        public Car(string name, string description) : base(name, description) { }
+        public override void Sound() { Console.WriteLine("Врум-врум!"); }
+    }
+
+    public class Steamboat : Device
+    {
+        public Steamboat(string name, string description) : base(name, description) { }
+        public override void Sound() { Console.WriteLine("Ту-тууу!"); }
+    }
+
+    // Задание 3
+    public class MusicalInstrument
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+
+        public MusicalInstrument(string name, string description)
+        {
+            Name = name;
+            Description = description;
+        }
+
+        public virtual void Sound() { Console.WriteLine("Звук инструмента..."); }
+        public void Show() { Console.WriteLine($"Инструмент: {Name}"); }
+        public void Desc() { Console.WriteLine($"Описание: {Description}"); }
+        public virtual void History() { Console.WriteLine("История инструмента..."); }
+    }
+
+    public class Violin : MusicalInstrument
+    {
+        public Violin(string name, string description) : base(name, description) { }
+        public override void Sound() { Console.WriteLine("Скрип-скрип!"); }
+        public override void History() { Console.WriteLine("История скрипки..."); }
+    }
+
+    public class Trombone : MusicalInstrument
+    {
+        public Trombone(string name, string description) : base(name, description) { }
+        public override void Sound() { Console.WriteLine("Тромбон звучит!"); }
+        public override void History() { Console.WriteLine("История тромбона..."); }
+    }
+
+    public class Ukulele : MusicalInstrument
+    {
+        public Ukulele(string name, string description) : base(name, description) { }
+        public override void Sound() { Console.WriteLine("Дзынь-дзынь!"); }
+        public override void History() { Console.WriteLine("История укулеле..."); }
+    }
+
+    public class Cello : MusicalInstrument
+    {
+        public Cello(string name, string description) : base(name, description) { }
+        public override void Sound() { Console.WriteLine("Виолончель звучит..."); }
+        public override void History() { Console.WriteLine("История виолончели..."); }
+    }
+
+    // Задание 4
+    public abstract class Worker
+    {
+        public abstract void Print();
+    }
+
+    public class President : Worker
+    {
+        public override void Print() { Console.WriteLine("Я - Президент!"); }
+    }
+
+    public class Security : Worker
+    {
+        public override void Print() { Console.WriteLine("Я - Охранник!"); }
+    }
+
+    public class Manager : Worker
+    {
+        public override void Print() { Console.WriteLine("Я - Менеджер!"); }
+    }
+
+    public class Engineer : Worker
+    {
+        public override void Print() { Console.WriteLine("Я - Инженер!"); }
+    }
+
+    public static void Main()
+    {
+        
+    }
+}
