@@ -1,0 +1,187 @@
+using System;
+using System.Collections.Generic;
+
+public class Tasks
+{
+    // Задание 1
+    public class NumberProcessor
+    {
+        public static int Square(int number) => number * number;
+        public static int Double(int number) => number * 2;
+    }
+
+    public static void Task1()
+    {
+        Console.WriteLine("Введите число:");
+        int number = int.Parse(Console.ReadLine());
+
+        Func<int, int> squareDelegate = NumberProcessor.Square;
+        Func<int, int> doubleDelegate = NumberProcessor.Double;
+
+        Console.WriteLine($"Число в квадрате: {squareDelegate(number)}");
+        Console.WriteLine($"Число удвоенное: {doubleDelegate(number)}");
+    }
+
+    // Задание 2
+    public class StringContainer
+    {
+        private string data;
+
+        public delegate void StringChangedEventHandler(object sender, StringChangedEventArgs e);
+        public event StringChangedEventHandler StringChanged;
+
+        public string Data
+        {
+            get { return data; }
+            set
+            {
+                if (data != value)
+                {
+                    string oldData = data;
+                    data = value;
+                    OnStringChanged(oldData, data);
+                }
+            }
+        }
+
+        protected virtual void OnStringChanged(string oldValue, string newValue)
+        {
+            StringChanged?.Invoke(this, new StringChangedEventArgs(oldValue, newValue));
+        }
+    }
+
+    public class StringChangedEventArgs : EventArgs
+    {
+        public string OldValue { get; }
+        public string NewValue { get; }
+
+        public StringChangedEventArgs(string oldValue, string newValue)
+        {
+            OldValue = oldValue;
+            NewValue = newValue;
+        }
+    }
+
+    public static void Task2()
+    {
+        StringContainer container = new StringContainer();
+        container.StringChanged += (sender, e) =>
+        {
+            Console.WriteLine($"Значение Data было изменено: Старое значение = {e.OldValue}, Новое значение = {e.NewValue}");
+        };
+
+        Console.WriteLine("Введите строку:");
+        container.Data = Console.ReadLine();
+        Console.WriteLine("Введите другую строку:");
+        container.Data = Console.ReadLine();
+    }
+
+    // Задание 3
+    public class SimpleCalculator
+    {
+        public delegate int CalculationEventHandler(int currentResult, int operand);
+
+        public event CalculationEventHandler Addition;
+        public event CalculationEventHandler Subtraction;
+        public event CalculationEventHandler Multiplication;
+        public event CalculationEventHandler Division;
+
+        public int Calculate(int currentResult, int operand, char operation)
+        {
+            switch (operation)
+            {
+                case '+':
+                    if (Addition != null)
+                    {
+                        return Addition(currentResult, operand);
+                    }
+                    else return currentResult + operand;
+                case '-':
+                    if (Subtraction != null)
+                    {
+                        return Subtraction(currentResult, operand);
+                    }
+                    else return currentResult - operand;
+                case '*':
+                    if (Multiplication != null)
+                    {
+                        return Multiplication(currentResult, operand);
+                    }
+                    else return currentResult * operand;
+                case '/':
+                    if (Division != null)
+                    {
+                        return Division(currentResult, operand);
+                    }
+                    else return currentResult / operand;
+                default:
+                    Console.WriteLine("Неподдерживаемая операция.");
+                    return currentResult;
+            }
+        }
+    }
+
+    public static void Task3()
+    {
+        SimpleCalculator calculator = new SimpleCalculator();
+
+        calculator.Addition += (current, operand) => {
+            Console.WriteLine($"+= {operand}. Промежуточный результат: {current + operand}");
+            return current + operand;
+        };
+        calculator.Subtraction += (current, operand) => {
+            Console.WriteLine($"-= {operand}. Промежуточный результат: {current - operand}");
+            return current - operand;
+        };
+        calculator.Multiplication += (current, operand) => {
+            Console.WriteLine($"*= {operand}. Промежуточный результат: {current * operand}");
+            return current * operand;
+        };
+        calculator.Division += (current, operand) => {
+            Console.WriteLine($"/= {operand}. Промежуточный результат: {current / operand}");
+            return current / operand;
+        };
+
+        Console.WriteLine("Введите начальное значение:");
+        int result = int.Parse(Console.ReadLine());
+
+        while (true)
+        {
+            Console.WriteLine("Введите операцию (+, -, *, /), число, или '=' для вывода результата:");
+            string input = Console.ReadLine();
+
+            if (input == "=")
+            {
+                Console.WriteLine($"Конечный результат: {result}");
+                break;
+            }
+
+            char operation = input[0];
+            int operand = int.Parse(input.Substring(1));
+
+            result = calculator.Calculate(result, operand, operation);
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Выберите задание (1, 2 или 3):");
+        string choice = Console.ReadLine();
+
+        switch (choice)
+        {
+            case "1":
+                Task1();
+                break;
+            case "2":
+                Task2();
+                break;
+            case "3":
+                Task3();
+                break;
+            default:
+                Console.WriteLine("Неверный выбор.");
+                break;
+        }
+    }
+}
