@@ -1,0 +1,36 @@
+using System;
+
+public record UserRecord(string Name, string Email);
+
+public class Program
+{
+    public delegate void NewUsersEventHandler(object sender, UserRecord userInfo);
+    public static event NewUsersEventHandler OnNewUsersRegistered;
+
+    static void Main()
+    {
+        OnNewUsersRegistered += HandleNewUserRegistration;
+
+        while (true)
+        {
+            Console.WriteLine("Введите имя пользователя (или 'exit' для выхода): ");
+            var username = Console.ReadLine();
+
+            if (username.ToLower() == "exit")
+                break;
+
+            Console.WriteLine("Введите email: ");
+            var email = Console.ReadLine();
+
+            var newUser = new UserRecord(username, email);
+            OnNewUsersRegistered?.Invoke(null, newUser);
+        }
+
+        Console.WriteLine("Программа завершена.");
+    }
+
+    private static void HandleNewUserRegistration(object sender, UserRecord user)
+    {
+        Console.WriteLine($"Зарегистрирован новый пользователь:\nИмя: {user.Name}\nEmail: {user.Email}");
+    }
+}
