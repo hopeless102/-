@@ -1,0 +1,127 @@
+using System;
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
+
+public class Tasks
+{
+    // Задание 1
+    public static void Task1()
+    {
+        const string inputFile = "weather_data.txt"; // Укажите имя файла с данными о погоде
+
+        try
+        {
+            if (!File.Exists(inputFile))
+            {
+                Console.WriteLine("Файл с данными о погоде не найден.");
+                return;
+            }
+
+            string[] lines = File.ReadAllLines(inputFile);
+
+            foreach (string line in lines)
+            {
+                string translatedLine = line;
+
+                // Извлечение температуры
+                Match tempMatch = Regex.Match(line, @"Temperature:\s*([-+]?\d+(\.\d+)?)\s*°C");
+                if (tempMatch.Success)
+                {
+                    Console.WriteLine($"Температура: {tempMatch.Groups[1].Value} °C");
+                    translatedLine = Regex.Replace(translatedLine, @"Temperature:\s*([-+]?\d+(\.\d+)?)\s*°C", "Температура: " + tempMatch.Groups[1].Value + " °C");
+                }
+
+                //Извлечение влажности
+                Match humMatch = Regex.Match(line, @"Humidity:\s*(\d+)\s*%");
+                if (humMatch.Success)
+                {
+                    Console.WriteLine($"Влажность: {humMatch.Groups[1].Value}%");
+                    translatedLine = Regex.Replace(translatedLine, @"Humidity:\s*(\d+)\s*%", "Влажность: " + humMatch.Groups[1].Value + "%");
+                }
+
+                // Замена английских слов на русские
+                translatedLine = translatedLine.Replace("Temperature", "Температура");
+                translatedLine = translatedLine.Replace("Humidity", "Влажность");
+                translatedLine = translatedLine.Replace("Wind", "Ветер");
+                // Добавьте другие замены по аналогии
+
+                Console.WriteLine(translatedLine);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Ошибка при обработке данных о погоде: " + ex.Message);
+        }
+    }
+
+    // Задание 2
+    public static void Task2()
+    {
+        const string inputFile = "input.cs";
+        const string outputFile = "output.cs";
+
+        try
+        {
+            if (!File.Exists(inputFile))
+            {
+                Console.WriteLine("Входной файл не найден.");
+                return;
+            }
+
+            string[] lines = File.ReadAllLines(inputFile);
+            List<string> modifiedLines = new List<string>();
+
+            foreach (string line in lines)
+            {
+                string modifiedLine = line;
+
+                // Замена public на private
+                modifiedLine = Regex.Replace(modifiedLine, @"public\s+(?!static)", "private ", RegexOptions.None);
+
+                // Применение camelCase к полям (предположение)
+                modifiedLine = Regex.Replace(modifiedLine, @"private\s+\w+\s+(\w+)\s*;", match =>
+                {
+                    string fieldName = match.Groups[1].Value;
+                    string camelCaseName = ToCamelCase(fieldName);
+                    return match.Value.Replace(fieldName, camelCaseName);
+                });
+
+                modifiedLines.Add(modifiedLine);
+            }
+
+            File.WriteAllLines(outputFile, modifiedLines);
+            Console.WriteLine($"Обработка завершена. Результат записан в {outputFile}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Ошибка: " + ex.Message);
+        }
+    }
+
+    private static string ToCamelCase(string str)
+    {
+        if (string.IsNullOrEmpty(str) || str.Length < 2)
+            return str;
+        return char.ToLowerInvariant(str[0]) + str.Substring(1);
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Выберите задание (1 или 2):");
+        string choice = Console.ReadLine();
+
+        switch (choice)
+        {
+            case "1":
+                Task1();
+                break;
+            case "2":
+                Task2();
+                break;
+            default:
+                Console.WriteLine("Неверный выбор.");
+                break;
+        }
+    }
+}
