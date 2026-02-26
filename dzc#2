@@ -1,0 +1,185 @@
+using System;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+
+public class Tasks
+{
+    // Задание 1
+    public static void Task1()
+    {
+        const string fileName = "Day17.txt";
+
+        while (true)
+        {
+            Console.WriteLine("Выберите действие:");
+            Console.WriteLine("1. Создать файл");
+            Console.WriteLine("2. Прочитать файл");
+            Console.WriteLine("3. Записать в файл");
+            Console.WriteLine("4. Выйти");
+
+            string choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    if (File.Exists(fileName))
+                    {
+                        Console.WriteLine("Файл уже существует.");
+                    }
+                    else
+                    {
+                        File.Create(fileName).Close(); //Создаем и сразу закрываем, чтобы можно было прочитать.
+                        Console.WriteLine("Файл создан.");
+                    }
+                    break;
+
+                case "2":
+                    if (!File.Exists(fileName))
+                    {
+                        Console.WriteLine("Файл не существует.");
+                    }
+                    else
+                    {
+                        try
+                        {
+                            string content = File.ReadAllText(fileName);
+                            Console.WriteLine("Содержимое файла:\n" + content);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Ошибка при чтении файла: " + ex.Message);
+                        }
+                    }
+                    break;
+
+                case "3":
+                    double[,] doubleArray = { { 1.1, 2.2 }, { 3.3, 4.4 } };
+                    int[,] intArray = { { 1, 2 }, { 3, 4 } };
+                    string fio = "Иванов Иван Иванович";
+                    DateTime birthDate = new DateTime(1990, 1, 1);
+
+                    try
+                    {
+                        using (StreamWriter writer = new StreamWriter(fileName))
+                        {
+                            writer.WriteLine(fio + ", " + birthDate.ToShortDateString());
+                            writer.WriteLine(doubleArray.GetLength(0) + " " + doubleArray.GetLength(1));
+                            for (int i = 0; i < doubleArray.GetLength(0); i++)
+                            {
+                                for (int j = 0; j < doubleArray.GetLength(1); j++)
+                                {
+                                    writer.Write(doubleArray[i, j] + " ");
+                                }
+                                writer.WriteLine();
+                            }
+
+                            writer.WriteLine(intArray.GetLength(0) + " " + intArray.GetLength(1));
+                            StringBuilder sb = new StringBuilder();
+                            for (int i = 0; i < intArray.GetLength(0); i++)
+                            {
+                                for (int j = 0; j < intArray.GetLength(1); j++)
+                                {
+                                    sb.Append(intArray[i, j] + " ");
+                                }
+                            }
+                            writer.WriteLine(sb.ToString().Trim()); //Trim убирает последний пробел
+                            writer.WriteLine(DateTime.Now.ToShortDateString());
+                        }
+                        Console.WriteLine("Информация записана в файл.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Ошибка при записи в файл: " + ex.Message);
+                    }
+                    break;
+
+                case "4":
+                    return;
+
+                default:
+                    Console.WriteLine("Неверный выбор.");
+                    break;
+            }
+        }
+    }
+
+    // Задание 2
+    public static void Task2()
+    {
+        const string inputFile = "input.cs"; // Замените на путь к вашему C# файлу
+        const string outputFile = "output.txt";
+
+        try
+        {
+            if (!File.Exists(inputFile))
+            {
+                Console.WriteLine("Входной файл не найден.");
+                return;
+            }
+
+            string[] lines = File.ReadAllLines(inputFile);
+            List<string> modifiedLines = new List<string>();
+
+            foreach (string line in lines)
+            {
+                string modifiedLine = line;
+
+                // 1. Замена public на private
+                modifiedLine = Regex.Replace(modifiedLine, @"public\s+(?!static)", "private ", RegexOptions.None); //Что бы не заменялись static
+                // 2. Замена строчных на прописные (для слов длиннее 2 символов)
+
+                MatchCollection matches = Regex.Matches(modifiedLine, @"\b\w{3,}\b");
+
+                foreach (Match match in matches)
+                {
+                    string word = match.Value;
+                    if (word.ToLower() == word) //если все символы строчные
+                        modifiedLine = modifiedLine.Replace(word, word.ToUpper());
+                }
+
+                // 3. Удаление лишних пробелов и табуляций
+                modifiedLine = Regex.Replace(modifiedLine, @"\s+", " ");
+                modifiedLine = modifiedLine.Trim();
+
+                modifiedLines.Add(modifiedLine);
+            }
+
+            // 4. Запись в файл в обратном порядке
+            using (StreamWriter writer = new StreamWriter(outputFile))
+            {
+                foreach (string line in modifiedLines)
+                {
+                    char[] charArray = line.ToCharArray();
+                    Array.Reverse(charArray);
+                    writer.WriteLine(new string(charArray));
+                }
+            }
+
+            Console.WriteLine("Обработка завершена. Результат записан в " + outputFile);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Ошибка: " + ex.Message);
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Выберите задание (1 или 2):");
+        string choice = Console.ReadLine();
+
+        switch (choice)
+        {
+            case "1":
+                Task1();
+                break;
+            case "2":
+                Task2();
+                break;
+            default:
+                Console.WriteLine("Неверный выбор.");
+                break;
+        }
+    }
+}
