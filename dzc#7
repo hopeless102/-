@@ -1,0 +1,293 @@
+using System;
+using System.Collections.Generic;
+using TicTacToe = TicTacToeGame; //Для удобства
+using Morse = MorseCodeConverter;
+
+public class Tasks
+{
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Выберите игру:");
+        Console.WriteLine("1. Крестики-Нолики (с компьютером)");
+        Console.WriteLine("2. Крестики-Нолики (с другим пользователем)");
+        Console.WriteLine("3. Перевод в азбуку Морзе");
+        Console.WriteLine("4. Перевод из азбуки Морзе");
+
+        string choice = Console.ReadLine();
+
+        switch (choice)
+        {
+            case "1":
+                TicTacToe.Game.PlayAgainstComputer();
+                break;
+            case "2":
+                TicTacToe.Game.PlayAgainstPlayer();
+                break;
+            case "3":
+                Morse.Converter.TranslateToMorse();
+                break;
+            case "4":
+                Morse.Converter.TranslateFromMorse();
+                break;
+            default:
+                Console.WriteLine("Неверный выбор.");
+                break;
+        }
+    }
+}
+
+namespace TicTacToeGame
+{
+    public class Game
+    {
+        private static char[] board = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+        private static int currentPlayer = 1; // 1 - игрок 1, 2 - игрок 2 (или компьютер)
+        private static int flag = 0;
+
+        public static void PlayAgainstComputer()
+        {
+            Random random = new Random();
+            currentPlayer = random.Next(1, 3); // Случайно выбираем, кто ходит первым
+
+            do
+            {
+                Console.Clear();
+                Console.WriteLine("Игрок 1 (X)  -  Компьютер (O)\n");
+                Console.WriteLine($"Игрок {currentPlayer}, ваш ход: ");
+
+                Board();
+
+                int choice;
+                if (currentPlayer == 1)
+                {
+                    choice = int.Parse(Console.ReadLine());
+                }
+                else
+                {
+                    // Компьютер выбирает случайную свободную клетку
+                    List<int> availableMoves = new List<int>();
+                    for (int i = 0; i < board.Length; i++)
+                    {
+                        if (char.IsDigit(board[i]))
+                        {
+                            availableMoves.Add(i + 1);
+                        }
+                    }
+
+                    if (availableMoves.Count > 0)
+                    {
+                        int moveIndex = random.Next(0, availableMoves.Count);
+                        choice = availableMoves[moveIndex];
+                    }
+                    else
+                    {
+                        choice = -1; // Нет доступных ходов
+                    }
+                }
+
+                if (choice < 1 || choice > 9 || !char.IsDigit(board[choice - 1]))
+                {
+                    Console.WriteLine("Неверный ход. Попробуйте еще раз.");
+                    Console.ReadKey();
+                    continue;
+                }
+
+                if (currentPlayer == 1)
+                {
+                    board[choice - 1] = 'X';
+                }
+                else
+                {
+                    board[choice - 1] = 'O';
+                }
+
+                flag = CheckWin();
+                currentPlayer = (currentPlayer == 1) ? 2 : 1; // Переключаем игрока
+            } while (flag != 1 && flag != -1);
+
+            Console.Clear();
+            Board();
+
+            if (flag == 1)
+            {
+                Console.WriteLine($"Игрок {(currentPlayer == 1 ? 2 : 1)} выиграл!"); // Выиграл предыдущий игрок
+            }
+            else
+            {
+                Console.WriteLine("Ничья!");
+            }
+
+            Console.ReadKey();
+        }
+
+        public static void PlayAgainstPlayer()
+        {
+            Random random = new Random();
+            currentPlayer = random.Next(1, 3); // Случайно выбираем, кто ходит первым
+
+            do
+            {
+                Console.Clear();
+                Console.WriteLine("Игрок 1 (X)  -  Игрок 2 (O)\n");
+                Console.WriteLine($"Игрок {currentPlayer}, ваш ход: ");
+
+                Board();
+
+                int choice = int.Parse(Console.ReadLine());
+
+                if (choice < 1 || choice > 9 || !char.IsDigit(board[choice - 1]))
+                {
+                    Console.WriteLine("Неверный ход. Попробуйте еще раз.");
+                    Console.ReadKey();
+                    continue;
+                }
+
+                board[choice - 1] = (currentPlayer == 1) ? 'X' : 'O';
+                flag = CheckWin();
+                currentPlayer = (currentPlayer == 1) ? 2 : 1; // Переключаем игрока
+            } while (flag != 1 && flag != -1);
+
+            Console.Clear();
+            Board();
+
+            if (flag == 1)
+            {
+                Console.WriteLine($"Игрок {(currentPlayer == 1 ? 2 : 1)} выиграл!"); // Выиграл предыдущий игрок
+            }
+            else
+            {
+                Console.WriteLine("Ничья!");
+            }
+
+            Console.ReadKey();
+        }
+
+
+        private static void Board()
+        {
+            Console.WriteLine("   {0}  |  {1}  |  {2}   ", board[0], board[1], board[2]);
+            Console.WriteLine("-------------------");
+            Console.WriteLine("   {0}  |  {1}  |  {2}   ", board[3], board[4], board[5]);
+            Console.WriteLine("-------------------");
+            Console.WriteLine("   {0}  |  {1}  |  {2}   ", board[6], board[7], board[8]);
+            Console.WriteLine();
+        }
+
+        private static int CheckWin()
+        {
+            // Проверка строк
+            for (int i = 0; i < 9; i += 3)
+            {
+                if (board[i] == board[i + 1] && board[i + 1] == board[i + 2])
+                {
+                    return 1;
+                }
+            }
+
+            // Проверка столбцов
+            for (int i = 0; i < 3; i++)
+            {
+                if (board[i] == board[i + 3] && board[i + 3] == board[i + 6])
+                {
+                    return 1;
+                }
+            }
+
+            // Проверка диагоналей
+            if ((board[0] == board[4] && board[4] == board[8]) || (board[2] == board[4] && board[4] == board[6]))
+            {
+                return 1;
+            }
+
+            // Проверка на ничью
+            int count = 0;
+            for (int i = 0; i < 9; i++)
+            {
+                if (!char.IsDigit(board[i]))
+                {
+                    count++;
+                }
+            }
+
+            if (count == 9)
+            {
+                return -1;
+            }
+
+            return 0; // Игра продолжается
+        }
+    }
+}
+
+namespace MorseCodeConverter
+{
+    public class Converter
+    {
+        private static Dictionary<char, string> charToMorse = new Dictionary<char, string>()
+        {
+            {'a', ".-"}, {'b', "-..."}, {'c', "-.-."}, {'d', "-.."}, {'e', "."},
+            {'f', "..-."}, {'g', "--."}, {'h', "...."}, {'i', ".."}, {'j', ".---"},
+            {'k', "-.-"}, {'l', ".-.."}, {'m', "--"}, {'n', "-."}, {'o', "---"},
+            {'p', ".--."}, {'q', "--.-"}, {'r', ".-."}, {'s', "..."}, {'t', "-"},
+            {'u', "..-"}, {'v', "...-"}, {'w', ".--"}, {'x', "-..-"}, {'y', "-.--"},
+            {'z', "--.."},
+            {'0', "-----"}, {'1', ".----"}, {'2', "..---"}, {'3', "...--"}, {'4', "....-"},
+            {'5', "....."}, {'6', "-...."}, {'7', "--..."}, {'8', "---.."}, {'9', "----."}
+        };
+
+        private static Dictionary<string, char> morseToChar = new Dictionary<string, char>()
+        {
+            {".-", 'a'}, {"-...", 'b'}, {"-.-.", 'c'}, {"-..", 'd'}, {".", 'e'},
+            {"..-.", 'f'}, {"--.", 'g'}, {"....", 'h'}, {"..", 'i'}, {".---", 'j'},
+            {"-.-", 'k'}, {".-..", 'l'}, {"--", 'm'}, {"-.", 'n'}, {"---", 'o'},
+            {".--.", 'p'}, {"--.-", 'q'}, {".-.", 'r'}, {"...", 's'}, {"-", 't'},
+            {"..-", 'u'}, {"...-", 'v'}, {".--", 'w'}, {"-..-", 'x'}, {"-.--", 'y'},
+            {"--..", 'z'},
+            {"-----", '0'}, {".----", '1'}, {"..---", '2'}, {"...--", '3'}, {"....-", '4'},
+            {".....", '5'}, {"-....", '6'}, {"--...", '7'}, {"---..", '8'}, {"----.", '9'}
+        };
+
+        public static void TranslateToMorse()
+        {
+            Console.WriteLine("Введите текст для перевода в азбуку Морзе:");
+            string text = Console.ReadLine().ToLower();
+            string morse = "";
+
+            foreach (char c in text)
+            {
+                if (charToMorse.ContainsKey(c))
+                {
+                    morse += charToMorse[c] + " ";
+                }
+                else
+                {
+                    morse += "  "; // Пробел для неизвестных символов
+                }
+            }
+
+            Console.WriteLine($"Азбука Морзе: {morse}");
+        }
+
+        public static void TranslateFromMorse()
+        {
+            Console.WriteLine("Введите текст в азбуке Морзе (разделяйте символы пробелами):");
+            string morseText = Console.ReadLine();
+            string[] morseCodes = morseText.Split(' ');
+            string text = "";
+
+            foreach (string code in morseCodes)
+            {
+                if (morseToChar.ContainsKey(code))
+                {
+                    text += morseToChar[code];
+                }
+                else
+                {
+                    text += "?"; // Знак вопроса для неизвестных кодов
+                }
+            }
+
+            Console.WriteLine($"Обычный текст: {text}");
+        }
+    }
+}
