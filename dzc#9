@@ -1,0 +1,197 @@
+﻿using System;
+using System.Collections.Generic;
+
+public class Tasks
+{
+    // Задание 1
+    public static void DrawSquare(int side, char symbol)
+    {
+        for (int i = 0; i < side; i++)
+        {
+            for (int j = 0; j < side; j++)
+            {
+                Console.Write(symbol);
+            }
+            Console.WriteLine();
+        }
+    }
+
+    // Задание 2
+    public static bool IsPalindrome(int number)
+    {
+        string numStr = number.ToString();
+        for (int i = 0; i < numStr.Length / 2; i++)
+        {
+            if (numStr[i] != numStr[numStr.Length - i - 1])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Задание 3
+    public static int[] FilterArray(int[] originalArray, int[] filterArray)
+    {
+        List<int> resultList = new List<int>(); ;
+        foreach (int num in originalArray)
+        {
+            bool shouldInclude = true;
+            foreach (int filterNum in filterArray)
+            {
+                if (num == filterNum)
+                {
+                    shouldInclude = false;
+                    break;
+                }
+            }
+            if (shouldInclude)
+            {
+                resultList.Add(num);
+            }
+        }
+        return resultList.ToArray();
+    }
+
+    // Задание 4
+    public class Website
+    {
+        public string Name { get; set; }
+        public string Path { get; set; }
+        public string Description { get; set; }
+        public string IPAddress { get; set; }
+
+        public void InputData()
+        {
+            Console.WriteLine("Введите название сайта:");
+            Name = Console.ReadLine();
+            Console.WriteLine("Введите путь к сайту:");
+            Path = Console.ReadLine();
+            Console.WriteLine("Введите описание сайта:");
+            Description = Console.ReadLine();
+            Console.WriteLine("Введите IP-адрес сайта:");
+            IPAddress = Console.ReadLine();
+        }
+
+        public void DisplayData()
+        {
+            Console.WriteLine($"Название сайта: {Name}");
+            Console.WriteLine($"Путь к сайту: {Path}");
+            Console.WriteLine($"Описание сайта: {Description}");
+            Console.WriteLine($"IP-адрес сайта: {IPAddress}");
+        }
+
+        public string GetName() { return Name; }
+        public void SetName(string name) { Name = name; }
+
+        public string GetPath() { return Path; }
+        public void SetPath(string path) { Path = path; }
+
+        public string GetDescription() { return Description; }
+        public void SetDescription(string description) { Description = description; }
+
+        public string GetIPAddress() { return IPAddress; }
+        public void SetIPAddress(string ipAddress) { IPAddress = ipAddress; }
+    }
+
+    // Задание 5
+    public class Journal
+    {
+        public string Name { get; set; }
+        public int FoundationYear { get; set; }
+        public string Description { get; set; }
+        public string ContactPhone { get; set; }
+        public string ContactEmail { get; set; }
+
+        public void InputData()
+        {
+            Console.WriteLine("Введите название журнала:");
+            Name = Console.ReadLine();
+            Console.WriteLine("Введите год основания:");
+            FoundationYear = int.Parse(Console.ReadLine());
+            Console.WriteLine("Введите описание журнала:");
+            Description = Console.ReadLine();
+            Console.WriteLine("Введите контактный телефон:");
+            ContactPhone = Console.ReadLine();
+            Console.WriteLine("Введите контактный e-mail:");
+            ContactEmail = Console.ReadLine();
+        }
+
+        public void DisplayData()
+        {
+            Console.WriteLine($"Название журнала: {Name}");
+            Console.WriteLine($"Год основания: {FoundationYear}");
+            Console.WriteLine($"Описание журнала: {Description}");
+            Console.WriteLine($"Контактный телефон: {ContactPhone}");
+            Console.WriteLine($"Контактный e-mail: {ContactEmail}");
+        }
+
+        public string GetName() { return Name; }
+        public void SetName(string name) { Name = name; }
+
+        public int GetFoundationYear() { return FoundationYear; }
+        public void SetFoundationYear(int year) { FoundationYear = year; }
+
+        public string GetDescription() { return Description; }
+        public void SetDescription(string description) { Description = description; }
+
+        public string GetContactPhone() { return ContactPhone; }
+        public void SetContactPhone(string phone) { ContactPhone = phone; }
+
+        public string GetContactEmail() { return ContactEmail; }
+        public void SetContactEmail(string email) { ContactEmail = email; }
+    }
+
+    // Задание 6
+    public class Store
+    {
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string Description { get; set; }
+        public string ContactPhone { get; set; }
+        public string ContactEmail { get; set; }
+
+        public void InputData()
+        {
+            Console.WriteLine("Введите название магазина:");
+            Name = Console.ReadLine();
+            Console.WriteLine("Введите адрес:");
+            Address = Console.ReadLine();
+            Console.WriteLine("Введите описание профиля магазина:");
+            Description = Console.ReadLine();
+            Console.WriteLine("Введите контактный телефон:");
+            ContactPhone = Console.ReadLine();
+            Console.WriteLine("Введите контактный e-mail:");
+            ContactEmail = Console.ReadLine();
+        }
+
+        public void DisplayData()
+        {
+            Console.WriteLine($"Название магазина: {Name}");
+            Console.WriteLine($"Адрес: {Address}");
+            Console.WriteLine($"Описание профиля магазина: {Description}");
+            Console.WriteLine($"Контактный телефон: {ContactPhone}");
+            Console.WriteLine($"Контактный e-mail: {ContactEmail}");
+        }
+
+        public string GetName() { return Name; }
+        public void SetName(string name) { Name = name; }
+
+        public string GetAddress() { return Address; }
+        public void SetAddress(string address) { Address = address; }
+
+        public string GetDescription() { return Description; }
+        public void SetDescription(string description) { Description = description; }
+
+        public string GetContactPhone() { return ContactPhone; }
+        public void SetContactPhone(string phone) { ContactPhone = phone; }
+
+        public string GetContactEmail() { return ContactEmail; }
+        public void SetContactEmail(string email) { ContactEmail = email; }
+    }
+
+    public static void Main(string[] args)
+    {
+
+    }
+}
