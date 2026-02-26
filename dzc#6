@@ -1,0 +1,137 @@
+using System;
+using System.Collections.Generic;
+
+public class Tasks
+{
+    public interface IPart
+    {
+        void Build();
+        bool IsBuilt { get; set; }
+    }
+
+    public interface IWorker
+    {
+        void Work(House house);
+    }
+
+    public class House
+    {
+        public Basement Basement { get; set; } = new Basement();
+        public List<Wall> Walls { get; set; } = new List<Wall>();
+        public List<Window> Windows { get; set; } = new List<Window>();
+        public Door Door { get; set; } = new Door();
+        public Roof Roof { get; set; } = new Roof();
+
+        public House(int wallCount, int windowCount)
+        {
+            for (int i = 0; i < wallCount; i++) Walls.Add(new Wall());
+            for (int i = 0; i < windowCount; i++) Windows.Add(new Window());
+        }
+
+        public void DrawHouse()
+        {
+            Console.WriteLine("  _________");
+            Console.WriteLine(" /---------\\");
+            Console.WriteLine("/-----------\\");
+            Console.WriteLine(" ||       ||");
+            Console.WriteLine(" ||[] _ []||");
+            Console.WriteLine(" ||  | |  ||");
+            Console.WriteLine(" ===========");
+        }
+
+        public bool IsComplete()
+        {
+            return Basement.IsBuilt && Door.IsBuilt && Roof.IsBuilt &&
+                   Walls.TrueForAll(w => w.IsBuilt) && Windows.TrueForAll(win => win.IsBuilt);
+        }
+    }
+
+    public class Basement : IPart
+    {
+        public bool IsBuilt { get; set; }
+        public void Build() { IsBuilt = true; Console.WriteLine("Фундамент построен."); }
+    }
+
+    public class Wall : IPart
+    {
+        public bool IsBuilt { get; set; }
+        public void Build() { IsBuilt = true; Console.WriteLine("Стена построена."); }
+    }
+
+    public class Door : IPart
+    {
+        public bool IsBuilt { get; set; }
+        public void Build() { IsBuilt = true; Console.WriteLine("Дверь установлена."); }
+    }
+
+    public class Window : IPart
+    {
+        public bool IsBuilt { get; set; }
+        public void Build() { IsBuilt = true; Console.WriteLine("Окно установлено."); }
+    }
+
+    public class Roof : IPart
+    {
+        public bool IsBuilt { get; set; }
+        public void Build() { IsBuilt = true; Console.WriteLine("Крыша построена."); }
+    }
+
+    public class Worker : IWorker
+    {
+        public string Name { get; set; }
+        public Worker(string name) { Name = name; }
+        public void Work(House house)
+        {
+            if (!house.Basement.IsBuilt) { house.Basement.Build(); return; }
+            foreach (var w in house.Walls) if (!w.IsBuilt) { w.Build(); return; }
+            if (!house.Door.IsBuilt) { house.Door.Build(); return; }
+            foreach (var win in house.Windows) if (!win.IsBuilt) { win.Build(); return; }
+            if (!house.Roof.IsBuilt) { house.Roof.Build(); return; }
+            Console.WriteLine($"{Name}: Работа завершена.");
+        }
+    }
+
+    public class TeamLeader : IWorker
+    {
+        public string Name { get; set; }
+        public TeamLeader(string name) { Name = name; }
+        public void Work(House house)
+        {
+            Console.WriteLine($"Отчет бригадира {Name}:");
+            Console.WriteLine($"Фундамент: {(house.Basement.IsBuilt ? "построен" : "не построен")}");
+            Console.WriteLine($"Стены: {house.Walls.FindAll(w => w.IsBuilt).Count}/{house.Walls.Count} построены");
+            Console.WriteLine($"Дверь: {(house.Door.IsBuilt ? "установлена" : "не установлена")}");
+            Console.WriteLine($"Окна: {house.Windows.FindAll(w => w.IsBuilt).Count}/{house.Windows.Count} установлены");
+            Console.WriteLine($"Крыша: {(house.Roof.IsBuilt ? "построена" : "не построена")}");
+        }
+    }
+
+    public class Team
+    {
+        public List<IWorker> Workers { get; set; } = new List<IWorker>();
+
+        public void BuildHouse(House house)
+        {
+            while (!house.IsComplete())
+            {
+                foreach (var worker in Workers)
+                {
+                    worker.Work(house);
+                }
+            }
+            Console.WriteLine("Дом построен!");
+            house.DrawHouse();
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        House house = new House(4, 2); // 4 стены, 2 окна
+        Team team = new Team();
+        team.Workers.Add(new Worker("Вася"));
+        team.Workers.Add(new Worker("Петя"));
+        team.Workers.Add(new TeamLeader("Иван Иванович"));
+
+        team.BuildHouse(house);
+    }
+}
